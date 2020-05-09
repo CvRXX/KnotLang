@@ -1,5 +1,5 @@
 # KnotLang
-### A language for those confined to rope
+### A language for those confined to rope as a pc
 KnotLang is a programming language based on brainfuck. It's turing complete and can be written in knots using regular ropes. 
 
 ## Introduction
