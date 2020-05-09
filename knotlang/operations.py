@@ -1,10 +1,12 @@
-import errors
-from errors import succes
-from errors import failed
-from state import State
+import knotlang.errors
+from knotlang.errors import succes
+from knotlang.errors import failed
+from knotlang.datatypes.state import State
+from knotlang.errors import expected
 
-
-def plus(oldState):
+# Increments the current byte by one and returns state.
+# plus::State->expected{State,error}
+def plus(oldState: State)->expected:
 	newMemory = oldState.memory
 	newMemory[oldState.pointer] += 1
 	return succes(State(
@@ -15,7 +17,9 @@ def plus(oldState):
 		oldState.input,
 		oldState.output))
 
-def min(oldState):
+# Decrements the current byte by one and returns state.
+# min::State->expected{State,error}
+def min(oldState: State)->expected:
 	newMemory = oldState.memory
 	newMemory[oldState.pointer] -= 1
 	return succes(State(
@@ -26,7 +30,9 @@ def min(oldState):
 		oldState.input,
 		oldState.output))
 
-def output(oldState):
+# Appends the current byte to the output buffer and returns state.
+# output::State->expected{State,error}
+def output(oldState: State)->expected:
 	newOutput = oldState.output + [oldState.memory[oldState.pointer]]
 	return succes(State(
 		oldState.tokens,
@@ -36,7 +42,9 @@ def output(oldState):
 		oldState.input,
 		newOutput))
 
-def pointerPlus(oldState):
+# Increments the pointer by one and returns state.
+# pointerPlus::State->expected{State,error}
+def pointerPlus(oldState: expected):
 	if oldState.pointer+1 < len(oldState.memory):
 		return succes(State(
 			oldState.tokens,
@@ -48,7 +56,9 @@ def pointerPlus(oldState):
 	else:
 		return failed(errors.MemoryOverflow(oldState.pointer+1,oldState.tokens[oldState.pc].knotId))
 
-def pointerMin(oldState):
+# Decrements the pointer by one and returns state.
+# pointerMin::State->expected{State,error}
+def pointerMin(oldState: State)->expected:
 	if oldState.pointer-1 >= 0:
 		return succes(State(
 			oldState.tokens,
@@ -60,7 +70,9 @@ def pointerMin(oldState):
 	else:
 		return failed(errors.MemoryOverflow(oldState.pointer-1,oldState.tokens[oldState.pc].knotId))
 
-def input(oldState):
+# Takes the next byte from the inputbuffer and put it on the current byte and returns state.
+# input::State->expected{State,error}
+def input(oldState: State)->expected:
 	if not len(oldState.input):
 		return failed(errors.InputEmpty(oldState.tokens[oldState.pc].knotId))
 	newMemory = oldState.memory
@@ -73,7 +85,9 @@ def input(oldState):
 		oldState.input[1:],
 		oldState.output))
 
-def jump(oldState):
+# If the current byte is higher than 0 jump to jumpvalue and return state.
+# jump::State->expected{State,error}
+def jump(oldState: State)->expected:
 	if oldState.memory[oldState.pointer]>0:
 		toJumpTo = int(oldState.tokens[oldState.pc].value)-1
 		
