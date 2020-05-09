@@ -3,6 +3,8 @@ from knotlang.errors import succes
 from knotlang.errors import failed
 from knotlang.datatypes.state import State
 from knotlang.errors import expected
+from knotlang import errors
+
 
 # Increments the current byte by one and returns state.
 # plus::State->expected{State,error}
@@ -68,7 +70,7 @@ def pointerMin(oldState: State)->expected:
 			oldState.input,
 			oldState.output))
 	else:
-		return failed(errors.MemoryOverflow(oldState.pointer-1,oldState.tokens[oldState.pc].knotId))
+		return failed(errors.MemoryUnderflow(oldState.pointer-1,oldState.tokens[oldState.pc].knotId))
 
 # Takes the next byte from the inputbuffer and put it on the current byte and returns state.
 # input::State->expected{State,error}
